@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrowdShield AI Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--border);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-btn {
+            background: transparent;
+            color: var(--text-sub);
+            border: none;
+            text-align: left;
+            padding: 15px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 280px;
+            padding: 50px;
+            flex: 1;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--text-sub);
+            font-size: 16px;
+        }
+
+        /* CARDS & FORMS */
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+        }
+
+        .card h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            background: rgba(59, 130, 246, 0.05);
+            border: 2px dashed var(--primary);
+            cursor: pointer;
+        }
+
+        button.action-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        button.action-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        button.action-btn.secondary {
+            background: var(--success);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        button.action-btn.secondary:hover {
+            background: #059669;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* GRID LAYOUTS */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        /* HEADER STATS & LISTS */
+        .features-list {
+            list-style: none;
+            display: grid;
+            gap: 15px;
+        }
+
+        .features-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .feature-icon {
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        /* TABLE */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(15, 23, 42, 0.6);
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-sub);
+            font-weight: 600;
+            text-align: left;
+            padding: 16px 20px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .badge.safe {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .badge.warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .badge.high {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        .footer {
+            text-align: center;
+            color: var(--text-sub);
+            font-size: 14px;
+            margin-top: 50px;
+            opacity: 0.6;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 15px;
+                text-align: center;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .logo {
+                justify-content: center;
+                margin-bottom: 20px;
+            }
+
+            .nav-btn {
+                display: inline-block;
+                margin: 5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <nav class="sidebar">
+        <div class="logo">🛡️ CrowdShield AI</div>
+
+        <button class="nav-btn active" onclick="switchPage('home', this)">
+            🏠 Home Overview
+        </button>
+        <button class="nav-btn" onclick="switchPage('live', this)">
+            🎥 Live Camera
+        </button>
+        <button class="nav-btn" onclick="switchPage('upload', this)">
+            📤 Upload Video
+        </button>
+        <button class="nav-btn" id="nav-results" onclick="switchPage('results', this)">
+            📊 Detection Results
+        </button>
+    </nav>
+
+    <!-- CONTENT WRAPPER -->
+    <main class="main-content">
+
+        <!-- 1. HOME TAB -->
+        <div class="page active" id="home">
+            <div class="header">
+                <h1>Mission Control</h1>
+                <p>Command Center for Crowd Intelligence</p>
+            </div>
+
+            <div class="card" style="text-align: center; padding: 60px 30px; background: linear-gradient(145deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9));">
+                <div style="font-size: 60px; margin-bottom: 20px; animation: float 3s ease-in-out infinite;">🛡️</div>
+                <h2 style="font-size: 32px; margin-bottom: 15px; color: var(--text-main); justify-content: center;">Protecting Spaces. Saving Lives.</h2>
+                <p style="color:var(--text-sub); font-size: 18px; max-width: 700px; margin: 0 auto 40px; line-height: 1.6;">
+                    Welcome to the CrowdShield Operator Terminal. This framework ensures public safety by providing continuous, vigilant oversight of high-traffic environments. Maintain situational awareness and respond dynamically to emerging situations.
+                </p>
+                
+                <div class="grid-2" style="text-align: left; max-width: 800px; margin: 0 auto;">
+                    <div style="background: rgba(255,255,255,0.03); padding: 25px; border-radius: 16px; border: 1px solid var(--border);">
+                        <h3 style="color: var(--success); margin-bottom: 10px; font-size: 18px;">🟢 System Status</h3>
+                        <p style="color: var(--text-sub); font-size: 14px;">All core services nominal. Ready for immediate deployment.</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); padding: 25px; border-radius: 16px; border: 1px solid var(--border);">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 18px;">📋 Getting Started</h3>
+                        <p style="color: var(--text-sub); font-size: 14px;">Select a module from the sidebar navigation to begin operations.</p>
+                    </div>
+                </div>
+            </div>
+            <style>
+                @keyframes float {
+                    0% { transform: translateY(0px); }
+                    50% { transform: translateY(-10px); }
+                    100% { transform: translateY(0px); }
+                }
+            </style>
+        </div>
+
+        <!-- 2. UPLOAD VIDEO TAB -->
+        <div class="page" id="upload">
+            <div class="header">
+                <h1>Footage Analysis</h1>
+                <p>Process a recorded video asynchronously</p>
+            </div>
+
+            <div class="card" style="max-width: 600px;">
+                <h2>📤 Standard Video Upload</h2>
+                <form action="/upload" method="post" enctype="multipart/form-data">
+                    <div class="input-group">
+                        <label>Designated Alert Email</label>
+                        <input type="email" name="email" placeholder="e.g. guard@company.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Designated Alert Phone</label>
+                        <input type="text" name="phone" placeholder="+1234567890" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Video Package (MP4/AVI)</label>
+                        <input type="file" name="video" accept="video/*" required>
+                    </div>
+                    <button class="action-btn" type="submit">Deploy Frame Analyzer</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 3. RESULTS TAB -->
+        <div class="page" id="results">
+            <div class="header">
+                <h1>Session Activity Data</h1>
+                <p>Telemetry table of evaluated metrics</p>
+            </div>
+
+            <div class="card">
+                <h2>📈 Historical Logs</h2>
+
+                {% if data %}
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>ID</th>
+                            <th>Frame Signature</th>
+                            <th>Total Pax</th>
+                            <th>Density Index</th>
+                            <th>Safety Score</th>
+                            <th>Operation Time</th>
+                        </tr>
+                        {% for row in data %}
+                        <tr>
+                            <td style="color:var(--text-sub);">#{{row[0]}}</td>
+                            <td>{{row[1]}}</td>
+                            <td>{{row[2]}} Entity</td>
+                            <td>{{row[3]}}</td>
+                            <td>
+                                {% if row[4] == "SAFE" %}
+                                <span class="badge safe">SAFE</span>
+                                {% elif row[4] == "WARNING" %}
+                                <span class="badge warning">WARNING</span>
+                                {% else %}
+                                <span class="badge high">HIGH RISK</span>
+                                {% endif %}
+                            </td>
+                            <td style="color:var(--text-sub);">{{row[5]}}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                {% else %}
+                <div
+                    style="text-align:center; padding: 50px; color:var(--text-sub); border: 2px dashed rgba(255,255,255,0.05); border-radius: 12px; margin-top:20px;">
+                    <div style="font-size:45px; margin-bottom:15px; opacity:0.3;">📁</div>
+                    <p>No detection logs located in your current session scope. Upload a video sequence to trigger log
+                        population.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 4. LIVE TAB NAV PROXY -->
+        <div class="page" id="live">
+            <div class="header">
+                <h1>Live Camera Connect</h1>
+                <p>Configure alerts and launch the real-time viewport</p>
+            </div>
+            <div class="card" style="max-width: 600px; margin: 0 auto;">
+                <h2>🚀 Launch Live Mode</h2>
+                <p style="color:var(--text-sub); margin-bottom:20px; line-height:1.6;">Configure your notification
+                    recipients here to rapidly launch the background tracking camera feed. Twilio rules apply to SMS forwarding.</p>
+
+                <form action="/start" method="post">
+                    <div class="input-group">
+                        <label>Designated Alert Email</label>
+                        <input type="email" name="email" placeholder="e.g. guard@company.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Designated Alert Phone</label>
+                        <input type="text" name="phone" placeholder="+1234567890" required>
+                    </div>
+                    <button type="submit" class="action-btn secondary">Initialize Live Tracking</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer">
+            ⚡ CrowdShield App Engine © 2026 | Next-Gen Surveillance Utility
+        </div>
+    </main>
+
+    <!-- Backend detection state passed safely via attributes to avoid JS lint errors -->
+    <meta id="server-state" data-has-results="{% if data %}true{% else %}false{% endif %}">
+
+    <script>
+        // SPA TAB LOGIC
+        function switchPage(pageId, btnElement) {
+            document.querySelectorAll('.page').forEach(page => { page.classList.remove('active'); });
+            document.getElementById(pageId).classList.add('active');
+
+            if (btnElement) {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                btnElement.classList.add('active');
+            }
+        }
+
+        // Backend detection of newly processed results
+        document.addEventListener('DOMContentLoaded', () => {
+            const serverState = document.getElementById('server-state');
+            if (serverState && serverState.getAttribute('data-has-results') === 'true') {
+                switchPage('results', document.getElementById('nav-results'));
+            }
+        });
+    </script>
+</body>
+
+</html>
