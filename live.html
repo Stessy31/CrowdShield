@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrowdShield Live Camera</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --primary: #3b82f6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image:
+                radial-gradient(circle at 50% 15%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 15% 85%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 50px 40px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            position: relative;
+            max-width: 500px;
+            width: 90%;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .status {
+            font-size: 18px;
+            color: var(--success);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 30px;
+            animation: pulse-soft 2s infinite;
+        }
+
+        .dot {
+            height: 10px;
+            width: 10px;
+            background: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--success);
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse-soft {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        .note {
+            margin: 30px 0;
+            color: var(--text-sub);
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .note b {
+            color: var(--text-main);
+            padding: 4px 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+        }
+
+        button.return-btn {
+            padding: 14px 30px;
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button.return-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* ALERT BAR */
+        .alert-box {
+            display: none;
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--danger);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 14px;
+            letter-spacing: 1px;
+            box-shadow: 0px 5px 20px rgba(239, 68, 68, 0.5);
+            animation: violent-shake 0.4s infinite;
+            z-index: 50;
+        }
+
+        @keyframes violent-shake {
+            0% {
+                transform: translateX(-50%) rotate(0deg);
+            }
+
+            25% {
+                transform: translateX(calc(-50% - 3px)) rotate(-1deg);
+            }
+
+            50% {
+                transform: translateX(calc(-50% + 3px)) rotate(1deg);
+            }
+
+            75% {
+                transform: translateX(calc(-50% - 3px)) rotate(-1deg);
+            }
+
+            100% {
+                transform: translateX(-50%) rotate(0deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+
+        <div id="alertBox" class="alert-box">
+            🚨 CRITICAL RISK DETECTED
+        </div>
+
+        <h1>🎥 Live Data Stream Active</h1>
+
+        <div class="status">
+            Connection Secured <span class="dot"></span>
+        </div>
+
+        <p class="note">
+            The computer vision module is actively analyzing the background video stream buffer.
+            <br><br>
+            Press <b>Q</b> in the camera window to terminate connection safely.
+        </p>
+
+        <a href="/" style="text-decoration:none;">
+            <button class="return-btn">← Terminate & Return to Dashboard</button>
+        </a>
+
+    </div>
+
+    <!-- ALARM MODULE -->
+    <audio id="alarmSound" loop>
+        <source src="/static/alarm.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // ALERT FIRING LOGIC
+        function handleRisk(riskParam) {
+            let guiAlert = document.getElementById("alertBox");
+            let audioTrigger = document.getElementById("alarmSound");
+
+            if (riskParam === "HIGH RISK") {
+                guiAlert.style.display = "block";
+                audioTrigger.play().catch(e => console.log("Audio play blocked", e));
+            } else {
+                guiAlert.style.display = "none";
+                audioTrigger.pause();
+            }
+        }
+    </script>
+</body>
+
+</html>
